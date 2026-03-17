@@ -96,13 +96,13 @@ TypeScript extension for scheduled analysis.
 Verify the package works end-to-end.
 
 ### Steps
-- [ ] 6.1 Create test/agents.test.ts — validate all agent .md files parse correctly (frontmatter, model groups, required fields)
-- [ ] 6.2 Create test/skills.test.ts — validate all SKILL.md files exist and have required sections
-- [ ] 6.3 Create test/package.test.ts — validate package.json pi config points to real directories
-- [ ] 6.4 Create test/next-template.test.ts — validate NEXT.md template structure
-- [ ] 6.5 Run full test suite, fix any failures
-- [ ] 6.6 Update README.md with final structure and usage
+- [x] 6.1 Create test/agents.test.ts — validate all agent .md files parse correctly (frontmatter, model groups, required fields)
+- [x] 6.2 Create test/skills.test.ts — validate all SKILL.md files exist and have required sections
+- [x] 6.3 Create test/package.test.ts — validate package.json pi config points to real directories
+- [x] 6.4 Create test/next-template.test.ts — validate NEXT.md template structure
+- [x] 6.5 Run full test suite, fix any failures — 72/72 pass
+- [x] 6.6 Update README.md with final structure and usage
 
 ### Gates
-- [ ] `npm test` passes with all tests green
-- [ ] README.md reflects actual package contents
+- [x] `npm test` passes with all tests green
+- [x] README.md reflects actual package contents
