@@ -13,14 +13,14 @@ Implement pi-director as a functional pi package with three working operations (
 Make agents use model groups instead of hardcoded models. Add relative discovery.
 
 ### Steps
-- [ ] 1.1 Update all agent .md frontmatter to use model groups (strategic/tactical/operational/scout) instead of hardcoded provider/model strings
-- [ ] 1.2 Update director.md agent discovery to check package-relative agents/ dir, then project .pi/agents/, then ~/.pi/agent/agents/
-- [ ] 1.3 Add director.md reference to the three skills (/next, /choose, /build) so it knows its operational modes
-- [ ] 1.4 Create agents/README.md documenting model tier assignments and discovery order
+- [x] 1.1 Update all agent .md frontmatter to use model groups (strategic/tactical/operational/scout) instead of hardcoded provider/model strings
+- [x] 1.2 Update director.md agent discovery to check package-relative agents/ dir, then project .pi/agents/, then ~/.pi/agent/agents/
+- [x] 1.3 Add director.md reference to the three skills (/next, /choose, /build) so it knows its operational modes
+- [x] 1.4 Create agents/README.md documenting model tier assignments and discovery order
 
 ### Gates
-- [ ] All agent .md files use model group names, not provider/model strings
-- [ ] Director agent discovery section references package-relative path first
+- [x] All agent .md files use model group names, not provider/model strings
+- [x] Director agent discovery section references package-relative path first
 
 ---
 
