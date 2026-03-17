@@ -29,7 +29,16 @@ One to two lines of rationale. Not a spec. Just why this choice was made.
 
 ## Mission
 
+### M-0100: Priority ladder — UX Quality → Security → Scale → Efficiency
+
+All components follow a strict priority ladder. Higher priorities must never regress when pursuing lower ones. Each level is a release gate:
+1. **UX Quality** — prove it works well for users → UX testing gate
+2. **Security** — prove it's safe → beta release gate
+3. **Scale** — prove it handles growth → full release gate
+4. **Efficiency** — optimize cost/speed → ongoing
+
 ### M-0001: Autonomous project development agent
+Supports: M-0100
 
 pi-director is the brain of pi-based development. It understands project intent, recommends what to do next, and executes development autonomously through specialized subagents. It replaces ad-hoc manual orchestration with a structured decision→plan→build loop.
 
@@ -100,6 +109,15 @@ Wraps pi-choose-wisely's replan skill. Compares CHOICES.md against codebase real
 
 ## Operations
 
+### O-0100: Four release gates matching priority ladder
+Supports: M-0100
+
+Each component progresses through gates in order. No gate may regress a prior one:
+1. **UX Testing** — prove UX quality with real usage → internal/alpha
+2. **Security Audit** — prove safety with review + hardening → beta publish
+3. **Scale Testing** — prove it handles load/growth → full publish
+4. **Efficiency Optimization** — reduce cost/latency → ongoing post-release
+
 ### O-0001: Subagent model tiering
 Supports: F-0005
 
@@ -132,6 +150,11 @@ CHOICES.md defines intent (managed by pi-choose-wisely). PLAN.md defines executi
 ---
 
 ## Architecture
+
+### A-0100: Non-regression constraint across priority levels
+Supports: M-0100, O-0100
+
+Every change must pass a regression check: does this degrade UX quality? If pursuing security, does it make the UX worse? If pursuing scale, does it compromise security or UX? Gate checks in /build enforce this — no phase completes if a higher-priority concern regresses.
 
 ### A-0001: Three-layer architecture
 Supports: M-0001
