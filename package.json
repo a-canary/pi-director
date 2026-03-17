@@ -1,0 +1,33 @@
+{
+  "name": "@a-canary/pi-director",
+  "version": "0.1.0",
+  "description": "Autonomous project director for pi. Recommends actions (NEXT.md), clarifies intent (CHOICES.md), and executes TDD development (PLAN.md) through specialized subagents.",
+  "keywords": ["pi-package"],
+  "author": {
+    "name": "aaron"
+  },
+  "license": "MIT",
+  "type": "module",
+  "pi": {
+    "skills": ["./skills"],
+    "agents": ["./agents"],
+    "extensions": ["./extensions"]
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*",
+    "@sinclair/typebox": "*",
+    "@aaron/pi-choose-wisely": "*",
+    "pi-upskill": "*"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}
+.0"
+  }
+}

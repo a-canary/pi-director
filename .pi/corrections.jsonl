@@ -1,0 +1,1 @@
+{"timestamp":"2026-03-17T14:57:22.799Z","failure":"Used \"aaron\" as author name in package.json instead of \"a-canary\" github username","correction":"Always use \"a-canary\" as author name — it's the github username for all packages","tokens_wasted":500,"source":"user","strength":"strong"}
