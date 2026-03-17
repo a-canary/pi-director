@@ -61,15 +61,20 @@ Supports: M-0001
 
 The user has exactly three high-level commands: `/next` (what should I do?), `/choose` (clarify intent), `/build` (execute the plan). Each produces a distinct artifact: NEXT.md, CHOICES.md, PLAN.md.
 
-### UX-0002: Approval-gated recommendations
-Supports: M-0003, UX-0001
+### UX-0002: CHOICES.md is user-steered intent
+Supports: UX-0001
 
-`/next` presents ranked recommendations with rationale. The user selects/approves items, which feed into CHOICES.md updates or PLAN.md phases. No autonomous action without approval.
+CHOICES.md represents what the user has decided through interviews and feedback. It is the user's voice. Agents never modify CHOICES.md autonomously — only the user steers it.
 
-### UX-0003: Autonomous execution after approval
-Supports: M-0001, UX-0002
+### UX-0003: NEXT.md surfaces agent-discovered issues outside CHOICES.md scope
+Supports: UX-0001, M-0003
 
-Once the user approves a plan, `/build` runs phases autonomously — recon, plan, build, test, gate check — only stopping on hard blockers (infeasible goals, security issues, missing dependencies).
+NEXT.md contains problems agents found that conflict with or expand beyond CHOICES.md. These require user approval before action — they represent scope changes, new concerns, or contradictions the user hasn't addressed yet.
+
+### UX-0004: Director acts autonomously within CHOICES.md scope
+Supports: UX-0002, UX-0003
+
+Any issue that falls within the scope of CHOICES.md — bugs, test failures, implementation gaps, refactors aligned with existing choices — the director fixes autonomously. No approval needed. Only issues outside CHOICES.md scope go to NEXT.md for user review.
 
 ---
 

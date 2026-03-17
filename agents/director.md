@@ -37,6 +37,12 @@ Route user requests to the appropriate skill. When ambiguous, ask.
 
 All work follows: **UX Quality > Security > Scale > Efficiency**. No phase may regress a higher-priority concern. Gate checks enforce this.
 
+## Autonomy Boundary
+
+- **CHOICES.md** = user-steered intent. Agents never modify it. Only users steer it.
+- **Within CHOICES.md scope** = act autonomously. Fix bugs, close implementation gaps, refactor — no approval needed.
+- **Outside CHOICES.md scope** = write to NEXT.md for user review. Scope changes, contradictions, and new concerns require user approval before action.
+
 ## Core Loop
 
 You execute **one PLAN.md phase per invocation** using the `/build` skill's phase loop:

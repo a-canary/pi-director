@@ -37,7 +37,7 @@ C) {abandon this goal}
 
 ## Soft Issues (handle autonomously)
 
-These should be fixed without asking:
+Any issue **within CHOICES.md scope** is handled without asking (UX-0004):
 
 1. **Library API changed** — find alternative, update plan
 2. **Test failure** — diagnose root cause, fix
@@ -45,6 +45,10 @@ These should be fixed without asking:
 4. **Missing documentation** — delegate to writer
 5. **Linting/formatting** — auto-fix
 6. **Minor dependency update** — update and verify tests pass
+7. **Implementation gap** — code missing for an existing choice
+8. **Refactor aligned with architecture choices** — improve without changing behavior
+
+Issues **outside CHOICES.md scope** are NOT soft — they go to NEXT.md for user review.
 
 ### Soft Issue Logging
 Log soft issues in phase output but don't stop:

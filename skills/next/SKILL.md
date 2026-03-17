@@ -59,10 +59,23 @@ Action: {specific steps}
 ...
 ```
 
-### Step 5 — Present for Approval
-Show top 5 recommendations. User selects items to:
-- Execute immediately (feeds into `/build`)
-- Add to CHOICES.md (feeds into `/choose`)
+### Step 5 — Classify & Route
+
+**Within CHOICES.md scope** → director handles autonomously (no NEXT.md entry needed):
+- Bug fixes aligned with existing choices
+- Test failures for implemented features
+- Implementation gaps for existing choices
+- Refactors that support existing architecture decisions
+
+**Outside CHOICES.md scope** → write to NEXT.md for user review:
+- Problems that contradict CHOICES.md decisions
+- Opportunities that expand beyond current scope
+- New concerns not addressed by any existing choice
+- Trade-offs that require user judgment
+
+### Step 6 — Present for Approval
+Show NEXT.md items (scope-external only). User selects items to:
+- Accept → feeds into `/choose` to update CHOICES.md, then director can act
 - Defer (stays in NEXT.md for next cycle)
 - Dismiss (removed with reason logged)
 

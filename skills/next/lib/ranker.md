@@ -45,9 +45,23 @@ After ranking, verify each recommendation respects M-0100:
 - Scale items rank above Efficiency-only items
 - Any recommendation that would regress a higher priority is flagged with ⚠️
 
+## Scope Classification
+
+Before ranking, classify each finding:
+
+### In-scope (autonomous)
+The finding relates to an existing CHOICES.md decision. The director can act without approval.
+- Mark as `scope: in` — these don't go to NEXT.md
+- Route directly to `/build` or fix inline
+
+### Out-of-scope (needs approval)
+The finding conflicts with, expands beyond, or is not covered by CHOICES.md.
+- Mark as `scope: out` — these go to NEXT.md
+- User must accept (→ update CHOICES.md) before director can act
+
 ## Output
 
-Top 10 recommendations, sorted by priority score descending:
+Top 10 out-of-scope recommendations for NEXT.md, sorted by priority score descending:
 
 ```markdown
 ## Priority 1: {title}
