@@ -13,44 +13,19 @@ Execute PLAN.md phases through the director pattern: recon → plan → build �
 
 ## Process
 
-### Step 1 — Establish Phase Gates
-Read PLAN.md and CHOICES.md. Identify:
-- Next incomplete phase
-- Exit criteria (what "done" means)
-- Assumptions that must hold
-- Blockers that would make phase infeasible
+Follow the [phase loop](lib/phase-loop.md) for each PLAN.md phase:
+
+1. **Read Gates** — parse PLAN.md + CHOICES.md for current phase
+2. **Recon** — parallel scout agents survey codebase and web
+3. **Refine Plan** — planner + writer agents break vague steps into concrete actions
+4. **Experiments** — throwaway PoCs for unknowns
+5. **Build & Test** — builder + reviewer agents, parallel when safe
+6. **Gate Check** — verify exit criteria + [regression check](lib/regression-check.md)
 
 If no PLAN.md exists, offer to run replan skill from pi-choose-wisely.
 
-### Step 2 — Recon
-Delegate to read-only agents in parallel:
-- **scout**: survey codebase — relevant files, patterns, dependencies
-- **web recon** (if needed): research libraries, APIs via context7 or web-search skills
-
-### Step 3 — Refine Phase Plan
-Using recon findings:
-- Break vague tasks into concrete steps with file paths and function names
-- Identify risks, unknowns, edge cases
-- Delegate to planner agent if architecturally complex
-- Update PLAN.md with refined tasks (delegate to writer agent)
-
-### Step 4 — Feasibility Experiments
-For unfamiliar libraries, new patterns, or unvalidated assumptions:
-- Delegate throwaway PoC to builder agent
-- If experiment fails and impacts CHOICES.md goals → **STOP, report to user**
-- If experiment fails but alternative exists → update plan, continue
-
-### Step 5 — Build, Test, Gate Check
-- Delegate implementation to builder agents (parallel when independent)
-- After each builder completes, delegate review to reviewer agent
-- If reviewer finds issues, delegate fixes back to builder
-- Verify every exit criterion
-- Mark phase complete in PLAN.md
-
-### Step 6 — Loop or Stop
-- If autonomous mode: loop to Step 1 for next phase
-- Hard stops (require user): mission infeasible, security issue, external dep broken
-- Soft issues (handle autonomously): API changed, test failure, review nits
+### Hard Stops vs Soft Issues
+See [hard-stops.md](lib/hard-stops.md) for the decision tree. Key rule: any change that regresses a higher priority level (M-0100) is a hard stop.
 
 ## Subagent Delegation
 - **scout** (operational model): fast codebase recon

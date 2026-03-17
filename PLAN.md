@@ -47,16 +47,16 @@ Build the data gathering and recommendation pipeline.
 Refine the build skill to be the canonical phase execution loop.
 
 ### Steps
-- [ ] 3.1 Extract the core loop from agents/director.md into skills/build/lib/phase-loop.md as reusable reference
-- [ ] 3.2 Create skills/build/lib/gate-check.md — how to verify exit criteria (run tests, check compilation, verify integration)
-- [ ] 3.3 Create skills/build/lib/hard-stops.md — enumeration of hard vs soft issues with decision tree
-- [ ] 3.4 Update skills/build/SKILL.md to reference lib modules
-- [ ] 3.5 Slim down agents/director.md to reference build skill instead of duplicating the loop
+- [x] 3.1 Extract the core loop from agents/director.md into skills/build/lib/phase-loop.md as reusable reference
+- [x] 3.2 Create skills/build/lib/regression-check.md — priority ladder regression verification
+- [x] 3.3 Create skills/build/lib/hard-stops.md — enumeration of hard vs soft issues with decision tree
+- [x] 3.4 Update skills/build/SKILL.md to reference lib modules
+- [x] 3.5 Slim down agents/director.md to reference build skill instead of duplicating the loop
 
 ### Gates
-- [ ] Director agent references build skill for phase execution
-- [ ] Hard stop vs soft issue classification is documented in lib/hard-stops.md
-- [ ] No duplication between director.md and build/SKILL.md
+- [x] Director agent references build skill for phase execution
+- [x] Hard stop vs soft issue classification is documented in lib/hard-stops.md
+- [x] No duplication between director.md and build/SKILL.md
 
 ---
 
