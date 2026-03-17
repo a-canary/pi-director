@@ -18,11 +18,13 @@ Analyze project data and generate ranked recommendations in NEXT.md.
 ## Process
 
 ### Step 1 — Gather
-Spawn parallel scout agents to collect data from each source:
-- Session scanner: parse recent sessions for failure patterns, token waste, repeated manual fixes
-- Code scanner: find complexity hotspots, untested code, large files, dead exports
-- Choice scanner: diff CHOICES.md against codebase reality
-- Log scanner: parse app logs for recurring errors
+Spawn **parallel** scout agents, one per scanner module:
+- [Session scanner](lib/session-scanner.md): parse recent sessions for failure patterns, token waste, repeated manual fixes
+- [Code scanner](lib/code-scanner.md): find complexity hotspots, untested code, large files, dead exports
+- [Choice scanner](lib/choice-scanner.md): diff CHOICES.md against codebase reality
+- [Log scanner](lib/log-scanner.md): parse app logs for recurring errors
+
+Each scanner runs as an independent subagent. All four run in parallel.
 
 ### Step 2 — Analyze
 Synthesize findings into recommendation categories:
@@ -34,11 +36,10 @@ Synthesize findings into recommendation categories:
 - **debt** — technical debt items with effort estimates
 
 ### Step 3 — Rank
-Score each recommendation by:
-- **Impact**: how much does this improve the project? (high/medium/low)
-- **Effort**: how much work? (small/medium/large)
-- **Evidence**: how strong is the data? (count of supporting signals)
-Priority = high-impact × low-effort × strong-evidence first.
+Apply the [ranking algorithm](lib/ranker.md):
+- **Impact** × **Effort** × **Evidence** = priority score (1-27)
+- Filter through priority ladder (M-0100): UX Quality > Security > Scale > Efficiency
+- Flag any recommendation that would regress a higher priority with ⚠️
 
 ### Step 4 — Write NEXT.md
 Generate structured output:

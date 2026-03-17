@@ -28,18 +28,18 @@ Make agents use model groups instead of hardcoded models. Add relative discovery
 Build the data gathering and recommendation pipeline.
 
 ### Steps
-- [ ] 2.1 Create skills/next/lib/session-scanner.md — instructions for scout agent to parse .pi/agent/sessions/*.jsonl, extract failure patterns, token waste, repeated operations
-- [ ] 2.2 Create skills/next/lib/code-scanner.md — instructions for scout agent to find complexity hotspots (files >300 lines, functions >50 lines, untested code, dead exports)
-- [ ] 2.3 Create skills/next/lib/choice-scanner.md — instructions for scout agent to diff CHOICES.md against codebase, find unimplemented/stale choices
-- [ ] 2.4 Create skills/next/lib/log-scanner.md — instructions for scout agent to parse app logs for recurring errors
-- [ ] 2.5 Create skills/next/lib/ranker.md — ranking algorithm: impact × inverse-effort × evidence-strength
-- [ ] 2.6 Update skills/next/SKILL.md to reference lib modules and define the parallel gather → analyze → rank → write workflow
-- [ ] 2.7 Create templates/NEXT.md — template for generated recommendations file
+- [x] 2.1 Create skills/next/lib/session-scanner.md — instructions for scout agent to parse .pi/agent/sessions/*.jsonl, extract failure patterns, token waste, repeated operations
+- [x] 2.2 Create skills/next/lib/code-scanner.md — instructions for scout agent to find complexity hotspots (files >300 lines, functions >50 lines, untested code, dead exports)
+- [x] 2.3 Create skills/next/lib/choice-scanner.md — instructions for scout agent to diff CHOICES.md against codebase, find unimplemented/stale choices
+- [x] 2.4 Create skills/next/lib/log-scanner.md — instructions for scout agent to parse app logs for recurring errors
+- [x] 2.5 Create skills/next/lib/ranker.md — ranking algorithm: impact × inverse-effort × evidence-strength
+- [x] 2.6 Update skills/next/SKILL.md to reference lib modules and define the parallel gather → analyze → rank → write workflow
+- [x] 2.7 Create templates/NEXT.md — template for generated recommendations file
 
 ### Gates
-- [ ] Each scanner module is a self-contained instruction set a scout agent can execute
-- [ ] SKILL.md references all lib modules and describes parallel dispatch
-- [ ] templates/NEXT.md exists with placeholder structure
+- [x] Each scanner module is a self-contained instruction set a scout agent can execute
+- [x] SKILL.md references all lib modules and describes parallel dispatch
+- [x] templates/NEXT.md exists with placeholder structure
 
 ---
 
