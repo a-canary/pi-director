@@ -64,14 +64,15 @@ Refine the build skill to be the canonical phase execution loop.
 Wire choose skill to delegate to pi-choose-wisely and bridge to replan.
 
 ### Steps
-- [ ] 4.1 Update skills/choose/SKILL.md with concrete delegation instructions: which pi-choose-wisely skill to invoke for each operation (bootstrap, audit, change, interview)
-- [ ] 4.2 Add replan bridge: after CHOICES.md changes, auto-suggest regenerating PLAN.md
-- [ ] 4.3 Add /next bridge: after CHOICES.md changes, note that /next should re-analyze
-- [ ] 4.4 Document the CHOICES.md → replan → PLAN.md → /build pipeline in skills/choose/lib/pipeline.md
+- [x] 4.1 Update skills/choose/SKILL.md with concrete delegation instructions: which pi-choose-wisely skill to invoke for each operation (bootstrap, audit, change, interview)
+- [x] 4.2 Add replan bridge: after CHOICES.md changes, auto-suggest regenerating PLAN.md
+- [x] 4.3 Add /next bridge: after CHOICES.md changes, note that /next should re-analyze
+- [x] 4.4 Document the CHOICES.md → replan → PLAN.md → /build pipeline in skills/choose/lib/pipeline.md
+- [x] 4.5 Define autonomy boundary: CHOICES.md (user-steered) vs NEXT.md (agent-discovered, out-of-scope)
 
 ### Gates
-- [ ] Choose skill has explicit delegation paths for all pi-choose-wisely operations
-- [ ] Pipeline documentation shows complete flow from intent to execution
+- [x] Choose skill has explicit delegation paths for all pi-choose-wisely operations
+- [x] Pipeline documentation shows complete flow from intent to execution
 
 ---
 
@@ -79,15 +80,15 @@ Wire choose skill to delegate to pi-choose-wisely and bridge to replan.
 TypeScript extension for scheduled analysis.
 
 ### Steps
-- [ ] 5.1 Create extensions/nightly-analysis.ts following pi-pi.ts pattern — spawns pi with /next skill on configurable schedule
-- [ ] 5.2 Add TUI widget showing last analysis time and top 3 recommendations from NEXT.md
-- [ ] 5.3 Add /nightly-status command to show schedule and last run
-- [ ] 5.4 Add configuration for schedule (default: daily at 2am, configurable via settings)
+- [x] 5.1 Create extensions/nightly-analysis.ts following pi-pi.ts pattern — spawns pi with /next skill on configurable schedule
+- [x] 5.2 Add TUI widget showing last analysis time and top 3 recommendations from NEXT.md
+- [x] 5.3 Add /nightly-status command to show schedule and last run
+- [x] 5.4 Add configuration for schedule (default: daily at 2am, configurable via /nightly-set)
 
 ### Gates
 - [ ] Extension loads without errors when pi starts
-- [ ] /nightly-status command responds with schedule info
-- [ ] Widget renders placeholder when no NEXT.md exists
+- [x] /nightly-status command responds with schedule info
+- [x] Widget renders placeholder when no NEXT.md exists
 
 ---
 
