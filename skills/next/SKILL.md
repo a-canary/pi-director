@@ -1,3 +1,7 @@
+---
+description: Analyze project data and generate ranked recommendations in NEXT.md. Use when user asks "what should I do next?" or runs /next.
+---
+
 # Next — Analysis & Recommendation Engine
 
 Analyze project data and generate ranked recommendations in NEXT.md.

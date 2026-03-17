@@ -1,3 +1,7 @@
+---
+description: Execute PLAN.md phases through TDD iterative development. Use when user runs /build or wants to implement planned features.
+---
+
 # Build — TDD Iterative Development Loop
 
 Execute PLAN.md phases through the director pattern: recon → plan → build → test → gate check.

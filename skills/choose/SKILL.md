@@ -1,3 +1,7 @@
+---
+description: Manage CHOICES.md for project vision, architecture, and UX decisions. Use when user runs /choose or needs to clarify project intent.
+---
+
 # Choose — Project Intent Clarification
 
 Wrapper around pi-choose-wisely for managing CHOICES.md within the director workflow.
