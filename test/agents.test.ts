@@ -48,8 +48,11 @@ describe("Agent definitions", () => {
 				expect(VALID_TIERS).toContain(model);
 			});
 
-			it("should have tools defined", () => {
-				expect(agent!.frontmatter.tools).toBeTruthy();
+			it("should have tools defined (or be a thinking-only critic)", () => {
+				const isCritic = agent!.frontmatter.name === "critic";
+				if (!isCritic) {
+					expect(agent!.frontmatter.tools).toBeTruthy();
+				}
 			});
 
 			it("should have a body with instructions", () => {

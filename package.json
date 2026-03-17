@@ -28,6 +28,7 @@
   "peerDependencies": {
     "@a-canary/pi-choose-wisely": "*",
     "@a-canary/pi-upskill": "*",
+    "pi-model-router": "*",
     "@mariozechner/pi-coding-agent": "*",
     "@mariozechner/pi-tui": "*",
     "@sinclair/typebox": "*"

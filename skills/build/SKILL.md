@@ -16,11 +16,12 @@ Execute PLAN.md phases through the director pattern: recon → plan → build �
 Follow the [phase loop](lib/phase-loop.md) for each PLAN.md phase:
 
 1. **Read Gates** — parse PLAN.md + CHOICES.md for current phase
-2. **Recon** — parallel scout agents survey codebase and web
-3. **Refine Plan** — planner + writer agents break vague steps into concrete actions
-4. **Experiments** — throwaway PoCs for unknowns
-5. **Build & Test** — builder + reviewer agents, parallel when safe
-6. **Gate Check** — verify exit criteria + [regression check](lib/regression-check.md)
+2. **Recon** (operational) — parallel scout agents, many tool calls
+3. **Plan** (tactical) — planner synthesizes concrete steps, few tool calls
+4. **Critique** (strategic) — critic reviews plan with zero tools, produces decision tree
+5. **Finalize** (tactical) — planner resolves branches, incorporates feedback
+6. **Build & Test** (operational) — builder + reviewer agents, parallel when safe
+7. **Gate Critique** (strategic) — critic reviews results with zero tools, approves or rejects
 
 If no PLAN.md exists, offer to run replan skill from pi-choose-wisely.
 
@@ -28,11 +29,12 @@ If no PLAN.md exists, offer to run replan skill from pi-choose-wisely.
 See [hard-stops.md](lib/hard-stops.md) for the decision tree. Key rule: any change that regresses a higher priority level (M-0100) is a hard stop.
 
 ## Subagent Delegation
-- **scout** (operational model): fast codebase recon
-- **planner** (strategic model): architecture decisions
-- **builder** (operational model): code implementation
-- **reviewer** (tactical model): code review
-- **writer** (operational model): documentation updates
+- **scout** (operational): fast codebase recon, many tool calls
+- **planner** (tactical): architecture and plan synthesis, few tool calls
+- **critic** (strategic): thinking-only review, zero tools, decision trees
+- **builder** (operational): code implementation, many tool calls
+- **reviewer** (tactical): code review, few tool calls
+- **writer** (operational): documentation updates
 
 ## Output Format
 After each phase:

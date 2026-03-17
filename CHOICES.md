@@ -64,7 +64,7 @@ The user has exactly three high-level commands: `/next` (what should I do?), `/c
 ### UX-0002: CHOICES.md is user-steered intent
 Supports: UX-0001
 
-CHOICES.md represents what the user has decided through interviews and feedback. It is the user's voice. Agents never modify CHOICES.md autonomously — only the user steers it.
+CHOICES.md represents what the user has decided through interviews and feedback. It is the user's voice. Agents may clean up language for coherence and clarity, but never change intent, add choices, remove choices, or reorder priorities without user direction.
 
 ### UX-0003: NEXT.md surfaces agent-discovered issues outside CHOICES.md scope
 Supports: UX-0001, M-0003
@@ -123,10 +123,27 @@ Each component progresses through gates in order. No gate may regress a prior on
 3. **Scale Testing** — prove it handles load/growth → full publish
 4. **Efficiency Optimization** — reduce cost/latency → ongoing post-release
 
-### O-0001: Subagent model tiering
+### O-0001: Subagent model tiering via pi-model-router
 Supports: F-0005
 
-Strategic model (opus) for director/planning. Tactical for review. Operational/scout for builders and recon. Minimizes cost while preserving quality where it matters.
+Model tiers routed by pi-model-router. Strategic is the most expensive tier and must be used sparingly — only for elevated reasoning with zero tool calls.
+
+### O-0101: Strategic models as thinking-only critics
+Supports: O-0001, M-0100
+
+Strategic models never receive tools. They are critics: given structured input curated by cheaper agents, they review, improve, and produce decision trees (max 8 leaves). This eliminates expensive tool-call loops and focuses strategic spend on pure reasoning at maximum thinking depth.
+
+### O-0102: Recon→Plan→Critique→Finalize→Build pipeline
+Supports: O-0101
+
+The standard execution pipeline:
+1. **Recon** (operational) — retrieve and summarize context, many tool calls
+2. **Plan** (tactical) — synthesize plan from context, few tool calls
+3. **Critique** (strategic) — review plan, provide improvements and/or decision tree, zero tool calls
+4. **Finalize** (tactical) — incorporate critique, resolve decision tree branches with tool calls
+5. **Build** (operational) — execute finalized plan
+
+A similar critique loop applies to implementation validation and phase gate results.
 
 ### O-0002: Hard stop vs soft issue classification
 Supports: F-0003
@@ -202,10 +219,10 @@ Supports: A-0003
 
 The scheduling extension is TypeScript using pi's ExtensionAPI. Spawns agents via `spawn("pi", ...)` like pi-pi.ts does. Uses TUI widgets for status display.
 
-### T-0003: Peer dependencies on pi-choose-wisely and pi-upskill
-Supports: A-0004, A-0005
+### T-0003: Peer dependencies on pi-choose-wisely, pi-upskill, and pi-model-router
+Supports: A-0004, A-0005, O-0001
 
-`peerDependencies`: `@a-canary/pi-choose-wisely`, `pi-upskill`, `@mariozechner/pi-coding-agent`. User installs all three; pi-director orchestrates them.
+`peerDependencies`: `@a-canary/pi-choose-wisely`, `@a-canary/pi-upskill`, `pi-model-router`, `@mariozechner/pi-coding-agent`. pi-model-router handles tier resolution so agents always get the right model for their role.
 
 ---
 
