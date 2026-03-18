@@ -137,10 +137,11 @@ export default function (pi: ExtensionAPI) {
 			if (state.topItems.length > 0) {
 				lines.push("", "Top recommendations:");
 				state.topItems.forEach((item, i) => lines.push(`  ${i + 1}. ${item}`));
+				ctx.ui.notify(lines.join("\n"), "info");
 			} else {
-				lines.push("", "No recommendations found. Run /next update to analyze.");
+				ctx.ui.notify("No recommendations found. Running analysis...", "info");
+				await runAnalysis();
 			}
-			ctx.ui.notify(lines.join("\n"), "info");
 		},
 	});
 
