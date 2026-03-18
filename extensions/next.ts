@@ -64,9 +64,10 @@ export default function (pi: ExtensionAPI) {
 				"-p",
 				"--no-session",
 				"--no-extensions",
+				"--skill", "next",
 				"--model", "operational",
 				"--thinking", "off",
-				"Run the /next analysis skill. Analyze session history, code quality, CHOICES.md gaps, and logs. Write findings to NEXT.md.",
+				"Run the next analysis skill. Analyze session history, code quality, CHOICES.md gaps, and logs. Write findings to NEXT.md.",
 			], {
 				stdio: ["ignore", "pipe", "pipe"],
 				env: { ...process.env },
@@ -88,7 +89,7 @@ export default function (pi: ExtensionAPI) {
 
 				if (widgetCtx) {
 					widgetCtx.ui.notify(
-						`Nightly analysis ${state.status} in ${Math.round(state.lastDuration / 1000)}s`,
+						`Analysis ${state.status} in ${Math.round(state.lastDuration / 1000)}s`,
 						state.status === "done" ? "success" : "error"
 					);
 				}
@@ -141,6 +142,13 @@ export default function (pi: ExtensionAPI) {
 			} else {
 				ctx.ui.notify("No recommendations found. Running analysis...", "info");
 				await runAnalysis();
+				// Show results after auto-run
+				const updated = parseNextMd(ctx.cwd);
+				if (updated.items.length > 0) {
+					const result = ["Top recommendations:"];
+					updated.items.forEach((item, i) => result.push(`  ${i + 1}. ${item}`));
+					ctx.ui.notify(result.join("\n"), "info");
+				}
 			}
 		},
 	});
