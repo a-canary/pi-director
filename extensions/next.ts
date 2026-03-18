@@ -63,7 +63,6 @@ export default function (pi: ExtensionAPI) {
 				"--mode", "json",
 				"-p",
 				"--no-session",
-				"--no-extensions",
 				"--skill", "next",
 				"--model", "operational",
 				"--thinking", "off",
