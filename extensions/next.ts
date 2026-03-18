@@ -2,15 +2,19 @@
  * Next — Automated work & design discovery
  *
  * Displays top recommendations from NEXT.md and triggers analysis updates.
+ * Auto-runs analysis if no recommendations exist when /next is invoked.
+ *
  * Part of the pi-director triad:
  *   /next          — automated discovery (what should we do?)
  *   /choose        — human-in-loop steering (what do we commit to?)
  *   /build         — automated build & verification (do it)
  *
  * Commands:
- *   /next          — view current recommendations
- *   /next update   — re-run analysis now
+ *   /next          — view recommendations (auto-runs analysis if empty)
+ *   /next update   — force re-run analysis
  *
+ * Spawns a pi subprocess with --skill next and --model operational.
+ * Requires model router extension for --model operational to resolve.
  * Scheduling is handled externally (pi-scheduler, pi-orchestrator cron, etc).
  */
 
