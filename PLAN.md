@@ -106,3 +106,19 @@ Verify the package works end-to-end.
 ### Gates
 - [x] `npm test` passes with all tests green
 - [x] README.md reflects actual package contents
+
+---
+
+## Phase 7: /setup — Provider Discovery & Model Router Onboarding
+First-run skill that wires a new user's AI providers to the model tier groups.
+
+### Steps
+- [x] 7.1 Create skills/setup/SKILL.md — full 5-phase discovery and onboarding workflow
+- [x] 7.2 Add test/setup-skill.test.ts — validate SKILL.md exists and has required sections — 15 tests
+- [x] 7.3 Update package.json pi.skills to include skills/setup — covered by `["./skills"]` directory glob
+- [x] 7.4 Update README.md with /setup command documentation — Quick Start section + Commands table
+
+### Gates
+- [x] `npm test` passes including setup-skill.test.ts — 103/103 pass
+- [x] SKILL.md covers all 5 phases: discover, label, models.json stubs, router.json, confirm
+- [x] README documents /setup as the first step after install

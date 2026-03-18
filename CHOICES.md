@@ -80,6 +80,11 @@ Any issue that falls within the scope of CHOICES.md — bugs, test failures, imp
 
 ## Features
 
+### F-0007: Setup — Provider discovery and model router onboarding
+Supports: M-0002, O-0001
+
+First-run skill that auto-detects auth.json credentials, env vars, .env files, and local services (Ollama/LM Studio/vLLM/LiteLLM). Presents findings, asks user to label each provider/model-group as free-limited, subscription, local, pay-as-you-go, or disallow. Generates models.json tier stubs and router.json with cost model. Free-limited providers (qwen-cli, gemini-cli, openrouter free tier) are always preferred on cost; subscription providers rotate via rateLimitDays when rate-limited. Selection is emergent from GDPval percentile filtering + effective cost minimization.
+
 ### F-0001: Next — Analysis and recommendation engine
 Supports: UX-0001, UX-0002
 
@@ -122,6 +127,11 @@ Each component progresses through gates in order. No gate may regress a prior on
 2. **Security Audit** — prove safety with review + hardening → beta publish
 3. **Scale Testing** — prove it handles load/growth → full publish
 4. **Efficiency Optimization** — reduce cost/latency → ongoing post-release
+
+### O-0003: Emergent model selection from GDPval + cost + rate-limit adaptation
+Supports: O-0001, F-0007
+
+Each tier filters models by GDPval percentile (strategic=100%, tactical=70%, operational=40%), then picks min effectiveCost. Labels set cost: free-limited=0, subscription=baseCost×0.3×(1+rateLimitDays×RATE_MUX), local=baseCost×0.5, pay-as-you-go=baseCost×1.0, disallow=Infinity. Free-limited uses backoff+failover when rate-limited (cost never inflated). Subscription rateLimitDays accumulates while in 429-backoff and stays elevated after recovery — over weeks this reaches equilibrium, balancing quality/cost/usage across providers. New models auto-slot via GDPval ranking.
 
 ### O-0001: Subagent model tiering via pi-model-router
 Supports: F-0005
