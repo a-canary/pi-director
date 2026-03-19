@@ -19,6 +19,9 @@
     ],
     "extensions": [
       "./extensions"
+    ],
+    "prompts": [
+      "./prompts"
     ]
   },
   "scripts": {
