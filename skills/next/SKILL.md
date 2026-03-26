@@ -87,11 +87,20 @@ Action: {specific steps}
 
 When an agent loads this skill, execute the following steps exactly.
 
-### Step 1 — Resolve scout model
+### Step 1 — Resolve scout model and load scanner instructions
 ```tool
 resolve_model_group { "group": "scout" }
 ```
 Use the returned model ref as `{scout_model}` in parallel tasks below.
+
+Read each scanner file now (paths are relative to this skill's directory):
+- Read [lib/session-scanner.md](lib/session-scanner.md) → save as `{session_scanner_instructions}`
+- Read [lib/code-scanner.md](lib/code-scanner.md) → save as `{code_scanner_instructions}`
+- Read [lib/choice-scanner.md](lib/choice-scanner.md) → save as `{choice_scanner_instructions}`
+- Read [lib/log-scanner.md](lib/log-scanner.md) → save as `{log_scanner_instructions}`
+- Read [lib/ranker.md](lib/ranker.md) → save as `{ranker_instructions}`
+
+These must be read by the parent agent and embedded into subagent tasks below, because subagents cannot resolve skill-relative paths.
 
 ### Step 2 — Run 4 scanners in parallel
 
@@ -101,22 +110,22 @@ subagent {
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read the scanner instructions at skills/next/lib/session-scanner.md (relative to cwd). Follow those instructions exactly. Analyze session files in .pi/agent/sessions/ and ~/.pi/agent/sessions/. Output your findings as markdown in the session-scanner format described in that file. Return the full markdown block as your response."
+      "task": "Follow these scanner instructions exactly:\n\n{session_scanner_instructions}\n\nAnalyze session files in .pi/agent/sessions/ and ~/.pi/agent/sessions/. Output your findings as markdown in the format described above. Return the full markdown block as your response."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read the scanner instructions at skills/next/lib/code-scanner.md (relative to cwd). Follow those instructions exactly. Scan all source files in the project (excluding node_modules, .git, dist). Output your findings as markdown in the code-scanner format described in that file. Return the full markdown block as your response."
+      "task": "Follow these scanner instructions exactly:\n\n{code_scanner_instructions}\n\nScan all source files in the project (excluding node_modules, .git, dist). Output your findings as markdown in the format described above. Return the full markdown block as your response."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read the scanner instructions at skills/next/lib/choice-scanner.md (relative to cwd). Follow those instructions exactly. Read CHOICES.md and diff it against the codebase. Also check PLAN.md alignment. Output your findings as markdown in the choice-scanner format described in that file. Return the full markdown block as your response."
+      "task": "Follow these scanner instructions exactly:\n\n{choice_scanner_instructions}\n\nRead CHOICES.md and diff it against the codebase. Also check PLAN.md alignment. Output your findings as markdown in the format described above. Return the full markdown block as your response."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read the scanner instructions at skills/next/lib/log-scanner.md (relative to cwd). Follow those instructions exactly. Find and parse all log files in the project. Also check .pi/corrections.jsonl for correction patterns. Output your findings as markdown in the log-scanner format described in that file. Return the full markdown block as your response."
+      "task": "Follow these scanner instructions exactly:\n\n{log_scanner_instructions}\n\nFind and parse all log files in the project. Also check .pi/corrections.jsonl for correction patterns. Output your findings as markdown in the format described above. Return the full markdown block as your response."
     }
   ]
 }
@@ -126,11 +135,16 @@ Collect all four responses. Each will be a markdown block.
 
 ### Step 3 — Synthesize draft NEXT.md
 
+Resolve the tactical model:
+```tool
+resolve_model_group { "group": "tactical" }
+```
+
 ```tool
 subagent {
   "agent": "claude-code",
   "model": "{tactical_model}",
-  "task": "You are the synthesis agent for the /next skill. You have four scanner reports as input.\n\nRead the ranking algorithm at skills/next/lib/ranker.md. Apply it to the combined findings.\n\n--- SESSION SCANNER ---\n{session_scanner_output}\n\n--- CODE SCANNER ---\n{code_scanner_output}\n\n--- CHOICE SCANNER ---\n{choice_scanner_output}\n\n--- LOG SCANNER ---\n{log_scanner_output}\n\nSteps:\n1. Combine all findings into a single list of candidate recommendations.\n2. Score each by Impact × Effort × Evidence (1-3 each, max score 27).\n3. Classify each as scope:in (covered by CHOICES.md) or scope:out (needs user approval).\n4. Filter to top 10 scope:out recommendations by priority score.\n5. Apply the priority ladder from ranker.md — flag regressions with ⚠️.\n6. Format as draft NEXT.md (DO NOT write the file yet) using:\n\n```\n# NEXT.md — Recommended Actions\n\nGenerated: {today's date}\nSources analyzed: {counts}\n\n## Priority 1: {title}\nCategory: {category} | Impact: {high/med/low} | Effort: {small/med/large} | Score: {N}\nEvidence: {supporting data — scanner, count, files}\nAction: {specific steps to take}\nSupports: {CHOICES.md IDs affected, if any}\n\n## Priority 2: {title}\n...\n```\n\nReturn the full draft NEXT.md content and a scope:in items list as your response. Do NOT write the file."
+  "task": "You are the synthesis agent for the /next skill. You have four scanner reports and a ranking algorithm as input.\n\n--- RANKING ALGORITHM ---\n{ranker_instructions}\n\n--- SESSION SCANNER ---\n{session_scanner_output}\n\n--- CODE SCANNER ---\n{code_scanner_output}\n\n--- CHOICE SCANNER ---\n{choice_scanner_output}\n\n--- LOG SCANNER ---\n{log_scanner_output}\n\nSteps:\n1. Combine all findings into a single list of candidate recommendations.\n2. Score each by Impact × Effort × Evidence (1-3 each, max score 27).\n3. Classify each as scope:in (covered by CHOICES.md) or scope:out (needs user approval).\n4. Filter to top 10 scope:out recommendations by priority score.\n5. Apply the priority ladder from the ranking algorithm — flag regressions with ⚠️.\n6. Format as draft NEXT.md (DO NOT write the file yet) using:\n\n```\n# NEXT.md — Recommended Actions\n\nGenerated: {today's date}\nSources analyzed: {counts}\n\n## Priority 1: {title}\nCategory: {category} | Impact: {high/med/low} | Effort: {small/med/large} | Score: {N}\nEvidence: {supporting data — scanner, count, files}\nAction: {specific steps to take}\nSupports: {CHOICES.md IDs affected, if any}\n\n## Priority 2: {title}\n...\n```\n\nReturn the full draft NEXT.md content and a scope:in items list as your response. Do NOT write the file."
 }
 ```
 

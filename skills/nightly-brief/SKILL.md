@@ -124,14 +124,26 @@ Check for `.pi/nightly-brief-last.md` (written at end of each run). Extract:
 
 If file doesn't exist, treat as first run.
 
-### Step 2 — Run scanners in parallel
+### Step 2 — Load scanner instructions and run scanners
 
 Resolve the scout model:
 ```tool
 resolve_model_group { "group": "scout" }
 ```
 
-Run all scanners simultaneously using `{scout_model}`:
+Read each scanner file from the `/next` skill's lib directory. These paths are relative to the **next** skill, not this skill — find them via the pi-director package:
+- Find and read `session-scanner.md` → save as `{session_scanner_instructions}`
+- Find and read `code-scanner.md` → save as `{code_scanner_instructions}`
+- Find and read `choice-scanner.md` → save as `{choice_scanner_instructions}`
+- Find and read `log-scanner.md` → save as `{log_scanner_instructions}`
+- Find and read `ranker.md` → save as `{ranker_instructions}`
+
+Locate them with: `find ~/.pi -path "*/next/lib/session-scanner.md" 2>/dev/null`
+
+Also check for a project-specific scanner override:
+- If `skills/nightly-brief/project.md` exists in the project workspace, read it for extra scanners and customizations.
+
+Run all scanners simultaneously using `{scout_model}`, embedding the instructions:
 
 ```tool
 subagent {
@@ -139,22 +151,22 @@ subagent {
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read skills/next/lib/session-scanner.md and follow it exactly. Also check: (1) .pi/nightly-brief-last.md for what overnight work ran last night and whether it completed, (2) what PLAN.md phases completed today. Report today's issues, solutions applied, and what changed. Return findings as markdown."
+      "task": "Follow these scanner instructions exactly:\n\n{session_scanner_instructions}\n\nAlso check: (1) .pi/nightly-brief-last.md for what overnight work ran last night and whether it completed, (2) what PLAN.md phases completed today. Report today's issues, solutions applied, and what changed. Return findings as markdown."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read skills/next/lib/code-scanner.md and follow it exactly. Focus on: complexity hotspots, untested code, dead exports, large files (>300 lines), TODO/FIXME comments with age context. Return findings as markdown."
+      "task": "Follow these scanner instructions exactly:\n\n{code_scanner_instructions}\n\nFocus on: complexity hotspots, untested code, dead exports, large files (>300 lines), TODO/FIXME comments with age context. Return findings as markdown."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read skills/next/lib/choice-scanner.md and follow it exactly. Also identify: (1) CHOICES.md gaps — things the project does that have no choice backing them, (2) stale choices — decisions that contradict current codebase reality, (3) missing choices — patterns in the code that should be formalized. Return findings as markdown."
+      "task": "Follow these scanner instructions exactly:\n\n{choice_scanner_instructions}\n\nAlso identify: (1) CHOICES.md gaps — things the project does that have no choice backing them, (2) stale choices — decisions that contradict current codebase reality, (3) missing choices — patterns in the code that should be formalized. Return findings as markdown."
     },
     {
       "agent": "claude-code",
       "model": "{scout_model}",
-      "task": "Read skills/next/lib/log-scanner.md and follow it exactly. Also check: (1) test results — pass/fail counts, duration trends, (2) any CI/build output in logs, (3) .pi/corrections.jsonl for recent agent failures. Report active errors, recurring patterns, and blockers. Return findings as markdown."
+      "task": "Follow these scanner instructions exactly:\n\n{log_scanner_instructions}\n\nAlso check: (1) test results — pass/fail counts, duration trends, (2) any CI/build output in logs, (3) .pi/corrections.jsonl for recent agent failures. Report active errors, recurring patterns, and blockers. Return findings as markdown."
     },
     {
       "agent": "claude-code",
@@ -164,9 +176,6 @@ subagent {
   ]
 }
 ```
-
-Also check for a project-specific scanner override:
-- If `skills/nightly-brief/project.md` exists, read it and run any additional scanners defined there.
 
 Collect all responses as `{session_scan}`, `{code_scan}`, `{choice_scan}`, `{log_scan}`, `{status_scan}`.
 
@@ -181,7 +190,7 @@ resolve_model_group { "group": "tactical" }
 subagent {
   "agent": "claude-code",
   "model": "{tactical_model}",
-  "task": "You are synthesizing a nightly brief for a software project director agent. This brief will be posted at 6pm. The user has until 10pm to approve proposals. Approved and in-scope items run overnight.\n\nInputs:\n\n--- STATUS ---\n{status_scan}\n\n--- SESSION (today's work, progress) ---\n{session_scan}\n\n--- CODE (complexity, debt, opportunities) ---\n{code_scan}\n\n--- CHOICES (scope gaps, stale decisions) ---\n{choice_scan}\n\n--- LOGS (errors, blockers, test results) ---\n{log_scan}\n\n--- PREVIOUS BRIEF ---\n{previous_brief_context}\n\nYour task:\n1. Extract the Status line (health emoji + 1 sentence).\n2. Extract 1-2 Progress bullets (what meaningfully changed today).\n3. Extract Blockers (only items actively preventing progress — omit if none).\n4. Generate 3-4 overnight work items using the ranker from skills/next/lib/ranker.md:\n   - Score each: Impact × Effort × Evidence (1-3 each)\n   - Effort calibration: prefer items completable overnight (< 4 hours); large items are fine if they're clearly the highest value\n   - Classify each: scope:in (fits CHOICES.md, auto-queued for 10pm) or choices:proposal (needs approval before 10pm)\n   - Categories: fix | refactor | simplify | evolution | upskill\n   - Prefer category diversity — don't pick 3 refactors\n   - Exclude deferred/dismissed items from previous brief unless evidence worsened\n5. For choices:proposal items: write what CHOICES.md change would be needed.\n\nReturn a JSON object:\n{\n  \"status\": { \"emoji\": \"✅|⚠️|❌\", \"line\": \"...\" },\n  \"progress\": [\"bullet 1\", \"bullet 2\"],\n  \"blockers\": [\"blocker 1\"],\n  \"items\": [\n    {\n      \"title\": \"...\",\n      \"scope\": \"in|choices_proposal\",\n      \"category\": \"fix|refactor|simplify|evolution|upskill\",\n      \"justification\": \"2-3 sentences with evidence\",\n      \"action\": \"specific steps with file names\",\n      \"choices_change\": \"what CHOICES.md line would be added/changed (choices_proposal only)\",\n      \"estimated_hours\": 1.5,\n      \"score\": 0\n    }\n  ],\n  \"in_scope_count\": 0,\n  \"proposal_count\": 0\n}\n\nDo not write any files. Return only the JSON."
+  "task": "You are synthesizing a nightly brief for a software project director agent. This brief will be posted at 6pm. The user has until 10pm to approve proposals. Approved and in-scope items run overnight.\n\nInputs:\n\n--- STATUS ---\n{status_scan}\n\n--- SESSION (today's work, progress) ---\n{session_scan}\n\n--- CODE (complexity, debt, opportunities) ---\n{code_scan}\n\n--- CHOICES (scope gaps, stale decisions) ---\n{choice_scan}\n\n--- LOGS (errors, blockers, test results) ---\n{log_scan}\n\n--- PREVIOUS BRIEF ---\n{previous_brief_context}\n\nYour task:\n1. Extract the Status line (health emoji + 1 sentence).\n2. Extract 1-2 Progress bullets (what meaningfully changed today).\n3. Extract Blockers (only items actively preventing progress — omit if none).\n4. Generate 3-4 overnight work items using this ranking algorithm:\n\n{ranker_instructions}\n\n   - Score each: Impact × Effort × Evidence (1-3 each)\n   - Effort calibration: prefer items completable overnight (< 4 hours); large items are fine if they're clearly the highest value\n   - Classify each: scope:in (fits CHOICES.md, auto-queued for 10pm) or choices:proposal (needs approval before 10pm)\n   - Categories: fix | refactor | simplify | evolution | upskill\n   - Prefer category diversity — don't pick 3 refactors\n   - Exclude deferred/dismissed items from previous brief unless evidence worsened\n5. For choices:proposal items: write what CHOICES.md change would be needed.\n\nReturn a JSON object:\n{\n  \"status\": { \"emoji\": \"✅|⚠️|❌\", \"line\": \"...\" },\n  \"progress\": [\"bullet 1\", \"bullet 2\"],\n  \"blockers\": [\"blocker 1\"],\n  \"items\": [\n    {\n      \"title\": \"...\",\n      \"scope\": \"in|choices_proposal\",\n      \"category\": \"fix|refactor|simplify|evolution|upskill\",\n      \"justification\": \"2-3 sentences with evidence\",\n      \"action\": \"specific steps with file names\",\n      \"choices_change\": \"what CHOICES.md line would be added/changed (choices_proposal only)\",\n      \"estimated_hours\": 1.5,\n      \"score\": 0\n    }\n  ],\n  \"in_scope_count\": 0,\n  \"proposal_count\": 0\n}\n\nDo not write any files. Return only the JSON."
 }
 ```
 
