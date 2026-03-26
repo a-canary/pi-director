@@ -31,8 +31,16 @@ After any CHOICES.md modification:
 
 1. **Cascade audit** — pi-choose-wisely runs this automatically (upward, lateral, downward checks)
 2. **Priority ladder check** — verify new/changed choices respect M-0100 ordering
-3. **Suggest replan** — if PLAN.md exists, ask: "CHOICES.md changed. Regenerate PLAN.md?" If yes, delegate to `pi-choose-wisely:replan`
-4. **Suggest /next** — "Run `/next` to see how this affects recommendations?"
+3. **Critic review** (strategic, zero tools) — delegate to **critic** agent with:
+   - The CHOICES.md diff (what changed)
+   - Cascade audit results from step 1
+   - Priority ladder context (M-0100)
+   - Review criteria: Do changes contradict existing choices? Does ordering respect the priority ladder? Are `Supports:` lines accurate? Any unintended scope creep?
+   - Critic produces: approval + improvements, or rejection + decision tree (max 8 leaves)
+   - If critic rejects → surface issues to user before proceeding
+   - If critic approves with improvements → apply language/clarity fixes (never change intent per UX-0002)
+4. **Suggest replan** — if PLAN.md exists, ask: "CHOICES.md changed. Regenerate PLAN.md?" If yes, delegate to `pi-choose-wisely:replan`
+5. **Suggest /next** — "Run `/next` to see how this affects recommendations?"
 
 ### Step 3 — New Choice Validation
 For any new choice added, verify:

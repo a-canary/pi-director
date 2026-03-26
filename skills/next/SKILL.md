@@ -124,19 +124,44 @@ subagent {
 
 Collect all four responses. Each will be a markdown block.
 
-### Step 3 — Synthesize and write NEXT.md
+### Step 3 — Synthesize draft NEXT.md
 
 ```tool
 subagent {
   "agent": "claude-code",
   "model": "{tactical_model}",
-  "task": "You are the synthesis agent for the /next skill. You have four scanner reports as input.\n\nRead the ranking algorithm at skills/next/lib/ranker.md. Apply it to the combined findings.\n\n--- SESSION SCANNER ---\n{session_scanner_output}\n\n--- CODE SCANNER ---\n{code_scanner_output}\n\n--- CHOICE SCANNER ---\n{choice_scanner_output}\n\n--- LOG SCANNER ---\n{log_scanner_output}\n\nSteps:\n1. Combine all findings into a single list of candidate recommendations.\n2. Score each by Impact × Effort × Evidence (1-3 each, max score 27).\n3. Classify each as scope:in (covered by CHOICES.md) or scope:out (needs user approval).\n4. Filter to top 10 scope:out recommendations by priority score.\n5. Apply the priority ladder from ranker.md — flag regressions with ⚠️.\n6. Write NEXT.md to the project root using the format:\n\n```\n# NEXT.md — Recommended Actions\n\nGenerated: {today's date}\nSources analyzed: {counts}\n\n## Priority 1: {title}\nCategory: {category} | Impact: {high/med/low} | Effort: {small/med/large} | Score: {N}\nEvidence: {supporting data — scanner, count, files}\nAction: {specific steps to take}\nSupports: {CHOICES.md IDs affected, if any}\n\n## Priority 2: {title}\n...\n```\n\nWrite NEXT.md then return a brief summary (3-5 lines) of the top 3 recommendations for the user."
+  "task": "You are the synthesis agent for the /next skill. You have four scanner reports as input.\n\nRead the ranking algorithm at skills/next/lib/ranker.md. Apply it to the combined findings.\n\n--- SESSION SCANNER ---\n{session_scanner_output}\n\n--- CODE SCANNER ---\n{code_scanner_output}\n\n--- CHOICE SCANNER ---\n{choice_scanner_output}\n\n--- LOG SCANNER ---\n{log_scanner_output}\n\nSteps:\n1. Combine all findings into a single list of candidate recommendations.\n2. Score each by Impact × Effort × Evidence (1-3 each, max score 27).\n3. Classify each as scope:in (covered by CHOICES.md) or scope:out (needs user approval).\n4. Filter to top 10 scope:out recommendations by priority score.\n5. Apply the priority ladder from ranker.md — flag regressions with ⚠️.\n6. Format as draft NEXT.md (DO NOT write the file yet) using:\n\n```\n# NEXT.md — Recommended Actions\n\nGenerated: {today's date}\nSources analyzed: {counts}\n\n## Priority 1: {title}\nCategory: {category} | Impact: {high/med/low} | Effort: {small/med/large} | Score: {N}\nEvidence: {supporting data — scanner, count, files}\nAction: {specific steps to take}\nSupports: {CHOICES.md IDs affected, if any}\n\n## Priority 2: {title}\n...\n```\n\nReturn the full draft NEXT.md content and a scope:in items list as your response. Do NOT write the file."
 }
 ```
 
-### Step 4 — Route and Execute
+Save the synthesis output as `{draft_next_md}` and `{scope_in_items}`.
 
-After the synthesis agent completes:
+### Step 4 — Critic review (strategic, zero tools)
+
+Resolve the strategic model:
+```tool
+resolve_model_group { "group": "strategic" }
+```
+
+Delegate to **critic** agent with the draft:
+```tool
+subagent {
+  "agent": "critic",
+  "model": "{strategic_model}",
+  "task": "## Context\nYou are reviewing draft recommendations from the /next analysis engine before they are presented to the user.\n\n## Proposal\n{draft_next_md}\n\n## Review Criteria\n1. **Scope classification accuracy** — Are scope:in vs scope:out assignments correct per CHOICES.md? Would any scope:in item actually change project direction (should be scope:out)? Would any scope:out item clearly fall within existing choices (should be scope:in)?\n2. **Ranking validity** — Do Impact/Effort/Evidence scores match the evidence cited? Are any scores inflated or deflated?\n3. **Priority ladder compliance** — Do recommendations respect M-0100 ordering? Flag any that would regress a higher priority.\n4. **Evidence quality** — Are recommendations backed by concrete scanner data, or are they speculative? Reject any recommendation with weak/fabricated evidence.\n5. **Actionability** — Is each Action field specific enough to execute? Vague actions like 'improve testing' should be flagged.\n6. **Redundancy** — Are any recommendations duplicates or subsets of others?\n\nProduce your standard Assessment/Strengths/Issues/Decision Tree output. For each issue, specify the Priority # and what to change."
+}
+```
+
+After critic response:
+- **If approved** → write NEXT.md as-is
+- **If approved with improvements** → apply critic's specific fixes to the draft, then write NEXT.md
+- **If rejected** → re-run synthesis (step 3) incorporating critic's feedback, then re-critique (max 1 retry, then write best version with critic's caveats noted)
+
+Write the final NEXT.md to project root.
+
+### Step 5 — Route and Execute
+
+After the critic-approved NEXT.md is written:
 
 **If there are scope:in items** (covered by CHOICES.md):
 1. Display the brief summary
